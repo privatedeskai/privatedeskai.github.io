@@ -1031,6 +1031,30 @@
 </footer>
 
 <script>
+ // ── CHECKOUT MODAL ──
+  var GUMROAD_URL = 'https://privatedeskai.gumroad.com/l/quickstart';
+
+  function openCheckoutModal() {
+    document.getElementById('checkout-modal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCheckoutModal() {
+    document.getElementById('checkout-modal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function proceedToGumroad() {
+    closeCheckoutModal();
+    var overlay = document.getElementById('fade-overlay');
+    overlay.style.display = 'block';
+    setTimeout(function() { overlay.style.opacity = '1'; }, 10);
+    setTimeout(function() { window.open(GUMROAD_URL, '_blank'); }, 650);
+    setTimeout(function() {
+      overlay.style.opacity = '0';
+      setTimeout(function() { overlay.style.display = 'none'; }, 600);
+    }, 700);
+  }
   // ── MODEL LIBRARY ──
   function toggleModelLibrary() {
     var lib = document.getElementById("model-library");
