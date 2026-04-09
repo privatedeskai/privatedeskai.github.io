@@ -676,14 +676,14 @@
           <td style="padding:14px;color:var(--ink);max-width:220px;font-size:12px;">Medical professionals, forensic specialists, researchers. No automatic restrictions. 256K context — full 500+ page contract.</td>
           <td style="padding:14px;"><span style="border:1px dashed #bbb;color:#aaa;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;">⏳ Coming soon</span></td>
         </tr>
-        <tr style="background:#f5f5f5;border-bottom:1px solid var(--border);opacity:0.85;">
-          <td style="padding:14px;font-weight:700;color:var(--ink);">dolphin3:8b<br><span style="font-size:11px;color:var(--muted);font-weight:400;">Dolphin · 4.9 GB</span></td>
+        <tr style="background:#f0f7f3;border-bottom:1px solid var(--border);">
+          <td style="padding:14px;font-weight:700;color:var(--accent);">dolphin3:8b<br><span style="font-size:11px;color:var(--muted);font-weight:400;">Dolphin · 4.9 GB</span></td>
           <td style="padding:14px;color:var(--ink);">8B</td>
           <td style="padding:14px;color:var(--ink);">16 GB</td>
           <td style="padding:14px;color:var(--ink);">32K</td>
           <td style="padding:14px;color:var(--muted);">—</td>
           <td style="padding:14px;color:var(--ink);max-width:220px;font-size:12px;">Medical staff, researchers. No built-in content restrictions. Compact professional alternative.</td>
-          <td style="padding:14px;"><span style="border:1px dashed #bbb;color:#aaa;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;">⏳ Coming soon</span></td>
+          <td style="padding:14px;"><span style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;">✓ Quickstart</span></td>
         </tr>
         <tr style="background:#fffde7;opacity:0.85;">
           <td style="padding:14px;font-weight:700;color:var(--ink);">medllama2:7b<br><span style="font-size:11px;color:var(--muted);font-weight:400;">Medical · 3.8 GB</span></td>
@@ -774,6 +774,38 @@
   <div class="section-label">Stage 1</div>
   <h2>PrivateAI Quickstart</h2>
   <p class="section-sub">Everything you need to get started with private local AI — in one package.</p>
+
+  <div style="margin-bottom:48px;">
+    <p style="font-size:15px;color:var(--muted);margin-bottom:20px;">Choose the AI model that matches your computer and needs. One price — CAD$29 for any model.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:960px;">
+      <div style="border:1.5px solid var(--border);border-radius:12px;padding:24px;background:var(--cream);">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">8 GB RAM · Compact</div>
+        <div style="font-size:22px;font-weight:800;font-family:'Playfair Display',Georgia,serif;color:var(--ink);margin-bottom:4px;">gemma3:4b</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Google · 3.3 GB · 128K context</div>
+        <div style="font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:12px;">Document summarization, email drafting, single-file Q&amp;A. Best for 8 GB RAM laptops.</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">&#9201; 10–30 sec response on CPU</div>
+        <a href="#" onclick="openCheckoutModal();return false;" class="btn-gold" style="display:block;text-align:center;padding:12px 16px;font-size:14px;">Buy now — CAD$29</a>
+      </div>
+      <div style="border:2px solid var(--accent);border-radius:12px;padding:24px;background:var(--accent);position:relative;">
+        <div style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:100px;white-space:nowrap;">Most popular</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:10px;">16 GB RAM · Recommended</div>
+        <div style="font-size:22px;font-weight:800;font-family:'Playfair Display',Georgia,serif;color:#fff;margin-bottom:4px;">qwen2.5:7b</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:12px;">Alibaba · 5 GB · 128K context</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;margin-bottom:12px;">Lawyers, accountants, HR, consultants. Best balance of quality and speed.</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:20px;">&#9201; 20–60 sec response on CPU</div>
+        <a href="#" onclick="openCheckoutModal();return false;" class="btn-gold" style="display:block;text-align:center;padding:12px 16px;font-size:14px;">Buy now — CAD$29</a>
+      </div>
+      <div style="border:1.5px solid var(--border);border-radius:12px;padding:24px;background:var(--cream);">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">16 GB RAM · Specialist</div>
+        <div style="font-size:22px;font-weight:800;font-family:'Playfair Display',Georgia,serif;color:var(--ink);margin-bottom:4px;">dolphin3:8b</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Dolphin · 4.9 GB · 32K context</div>
+        <div style="font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:12px;">No built-in content restrictions. Medical professionals, researchers, forensic specialists.</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">&#9201; 20–60 sec response on CPU</div>
+        <a href="#" onclick="openCheckoutModal();return false;" class="btn-gold" style="display:block;text-align:center;padding:12px 16px;font-size:14px;">Buy now — CAD$29</a>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:12px;">Not sure which to choose? <a href="#quiz" style="color:var(--accent);font-weight:600;">Use the quiz above</a> — it recommends the right model for your hardware.</p>
+  </div>
 
   <div class="product-grid">
     <div class="product-card featured">
@@ -1114,7 +1146,7 @@
     { name: 'llama3.1:8b',  params: '8B',  ram: 16, size: '4.7 GB', context: '128K', speed_win: '20–50 sec', speed_mac: '5–10 sec',  org: 'Meta',     available: false, os: ['windows','mac'], file_win: null, file_mac: null, desc: 'Popular model. Large community of ready-made professional prompts.' },
     { name: 'deepseek-r1:7b', params: '7B', ram: 16, size: '4.7 GB', context: '64K', speed_win: '20–50 sec', speed_mac: '5–10 sec', org: 'DeepSeek', available: false, os: ['windows','mac'], file_win: null, file_mac: null, desc: 'Shows reasoning steps. Tax consultants, financial analysts, lawyers.', reasoning: true },
     { name: 'qwen3.5-uncensored:9b', params: '9B', ram: 16, size: '7.4 GB', context: '256K', speed_win: '25–60 sec', speed_mac: '5–12 sec', org: 'jaahas', available: false, os: ['windows','mac'], file_win: null, file_mac: null, desc: 'No automatic restrictions. Medical, forensic, research. 256K context.', reasoning: true },
-    { name: 'dolphin3:8b',  params: '8B',  ram: 16, size: '4.9 GB', context: '32K',  speed_win: '20–50 sec', speed_mac: '5–10 sec',  org: 'Dolphin',  available: false, os: ['windows','mac'], file_win: null, file_mac: null, desc: 'No built-in content restrictions. Medical staff, researchers.' },
+    { name: 'dolphin3:8b',  params: '8B',  ram: 16, size: '4.9 GB', context: '32K',  speed_win: '20–50 sec', speed_mac: '5–10 sec',  org: 'Dolphin',  available: true,  os: ['windows','mac'], file_win: 'install-win-dolphin3.ps1', file_mac: 'install-mac-dolphin3.sh', desc: 'No built-in content restrictions. Medical staff, researchers.' },
     { name: 'medllama2:7b', params: '7B',  ram: 16, size: '3.8 GB', context: '4K',   speed_win: '15–40 sec', speed_mac: '5–10 sec',  org: 'Medical',  available: false, os: ['windows'], file_win: null, file_mac: null, desc: 'Trained on medical texts. Doctors, clinics, patient records.' },
   ];
 
