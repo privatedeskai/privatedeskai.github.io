@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrivateDoc AI — Локальный AI для работы с документами</title>
+<meta name="description" content="Работаете с документами которые нельзя загружать в ChatGPT? Готовая сборка из инструментов с открытым программным кодом. Установил — работаешь.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f0f0f;
+  --paper: #f5f2ec;
+  --cream: #ede9e0;
+  --accent: #1a3a2a;
+  --accent-light: #2d5c42;
+  --gold: #c4952a;
+  --gold-light: #f0c45a;
+  --muted: #6b6560;
+  --border: #d4cfc6;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 48px;
+  background: rgba(245,242,236,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 800; font-size: 20px;
+  color: var(--accent); text-decoration: none; letter-spacing: -0.5px;
+}
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 13px; font-weight: 500;
+  color: var(--muted); text-decoration: none; transition: color .2s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-cta {
+  background: var(--accent); color: #fff;
+  padding: 10px 22px; border-radius: 6px;
+  font-size: 14px; font-weight: 600; text-decoration: none;
+  transition: background .2s;
+}
+.nav-cta:hover { background: var(--accent-light); }
+.nav-cta .old-price {
+  text-decoration: line-through;
+  opacity: 0.6;
+  font-weight: 400;
+  margin-right: 4px;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 140px 48px 80px;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -200px; right: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(196,149,42,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cream); border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: 100px;
+  font-size: 12px; font-weight: 500; color: var(--muted);
+  margin-bottom: 32px; width: fit-content;
+}
+.hero-tag span { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); display: inline-block; }
+.hero h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(34px, 4vw, 54px);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -2px; color: var(--ink);
+  max-width: 860px; margin-bottom: 20px;
+}
+.hero h1 em { color: var(--accent); font-style: normal; }
+.hero-hook {
+  font-size: 18px; font-weight: 600; color: var(--accent);
+  max-width: 640px; margin-bottom: 16px;
+}
+.hero-sub {
+  font-size: 15px; color: var(--muted); font-weight: 400;
+  max-width: 560px; line-height: 1.6; margin-bottom: 48px;
+}
+.hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
+.btn-primary {
+  background: var(--accent); color: #fff;
+  padding: 16px 32px; border-radius: 8px;
+  font-size: 16px; font-weight: 600; text-decoration: none;
+  transition: background .2s, transform .1s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); }
+.btn-secondary {
+  background: transparent; color: var(--ink);
+  padding: 16px 32px; border-radius: 8px;
+  font-size: 16px; font-weight: 500; text-decoration: none;
+  border: 1.5px solid var(--border);
+  transition: border-color .2s, transform .1s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-secondary:hover { border-color: var(--ink); transform: translateY(-1px); }
+.hero-note {
+  font-size: 13px; color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.hero-note::before { content: '→'; color: var(--gold); }
+
+/* ── SECTIONS ── */
+section { padding: 100px 48px; }
+.section-label {
+  font-size: 12px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
+}
+h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 800; line-height: 1.1;
+  letter-spacing: -1.5px; margin-bottom: 20px;
+}
+.section-sub {
+  font-size: 16px; color: var(--muted);
+  max-width: 560px; margin-bottom: 56px;
+}
+.divider { height: 1px; background: var(--border); margin: 0 48px; }
+
+/* ── FOR WHOM ── */
+#for-whom { background: var(--accent); }
+#for-whom h2 { color: #fff; }
+#for-whom .section-label { color: var(--gold-light); }
+#for-whom .cards-note { color: rgba(255,255,255,0.6); }
+#for-whom .card { background: var(--paper); border-color: var(--border); }
+#for-whom .card:hover { border-color: var(--accent-light); }
+#for-whom .card h3 { color: var(--ink); }
+#for-whom .card p { color: var(--muted); }
+.cards-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  margin-bottom: 32px;
+}
+.card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px 24px;
+  transition: border-color .2s, transform .2s;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.card-icon { font-size: 32px; margin-bottom: 14px; }
+.card h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18px; font-weight: 800;
+  margin-bottom: 10px; color: var(--ink);
+}
+.card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.cards-note {
+  font-size: 14px; color: var(--muted);
+  font-style: italic; text-align: center;
+}
+
+/* ── HOW IT WORKS ── */
+#how { background: var(--paper); }
+.steps { display: flex; flex-direction: column; gap: 0; max-width: 720px; }
+.step {
+  display: flex; gap: 32px; padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  width: 52px; height: 52px; flex-shrink: 0;
+  background: var(--accent); color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px; font-weight: 800;
+}
+.step-content h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18px; font-weight: 800;
+  margin-bottom: 8px; color: var(--ink);
+}
+.step-content p { font-size: 15px; color: var(--muted); line-height: 1.6; }
+
+/* ── PRODUCT ── */
+#product { background: var(--accent); color: #fff; }
+#product h2 { color: #fff; }
+#product .section-sub { color: rgba(255,255,255,0.65); }
+.product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+
+.product-main {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px; padding: 40px;
+}
+.product-price {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 48px; font-weight: 800;
+  color: var(--gold-light); letter-spacing: -2px;
+  margin-bottom: 4px;
+}
+.product-price-sub {
+  font-size: 14px; color: rgba(255,255,255,0.5);
+  margin-bottom: 32px;
+}
+.product-badge {
+  display: inline-block;
+  background: var(--gold); color: #fff;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 100px; margin-bottom: 16px;
+}
+.product-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28px; font-weight: 800; color: #fff;
+  margin-bottom: 28px;
+}
+.product-features { list-style: none; margin-bottom: 32px; }
+.product-features li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 15px; color: rgba(255,255,255,0.85);
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.product-features li:last-child { border-bottom: none; }
+.product-features li::before { content: '✓'; color: var(--gold-light); font-weight: 700; flex-shrink: 0; }
+.sub-block {
+  margin-top: 24px; padding: 20px 24px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+}
+.sub-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: rgba(255,255,255,0.45);
+  margin-bottom: 10px;
+}
+.sub-features { list-style: none; }
+.sub-features li {
+  font-size: 14px; color: rgba(255,255,255,0.7);
+  padding: 5px 0; display: flex; align-items: flex-start; gap: 8px;
+}
+.sub-features li::before { content: '→'; color: var(--gold-light); flex-shrink: 0; }
+.btn-gold {
+  background: var(--gold); color: #fff;
+  padding: 16px 32px; border-radius: 8px;
+  font-size: 16px; font-weight: 600;
+  border: none; cursor: pointer;
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: background .2s; width: 100%;
+  text-align: center; display: block; text-decoration: none;
+  margin-top: 28px;
+}
+.btn-gold:hover { background: var(--gold-light); color: var(--ink); }
+
+.testdrive-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px; padding: 36px;
+}
+.testdrive-card h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 24px; font-weight: 800; color: #fff;
+  margin-bottom: 8px;
+}
+.testdrive-price {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 36px; font-weight: 800;
+  color: var(--gold-light); margin-bottom: 16px;
+}
+.testdrive-card p { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 10px; line-height: 1.6; }
+.testdrive-upgrade {
+  margin-top: 20px; padding: 14px 16px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 8px;
+  font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5;
+}
+
+/* ── MODEL SELECTOR ── */
+#models { background: var(--cream); }
+.quiz-wrapper { max-width: 700px; }
+.quiz-step { margin-bottom: 36px; }
+.quiz-question {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18px; font-weight: 700;
+  margin-bottom: 16px; color: var(--ink);
+}
+.quiz-options { display: flex; gap: 12px; flex-wrap: wrap; }
+.quiz-btn {
+  padding: 12px 24px; border: 1.5px solid var(--border);
+  background: var(--paper); border-radius: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px; font-weight: 500;
+  cursor: pointer; color: var(--ink); transition: all .2s;
+}
+.quiz-btn:hover { border-color: var(--accent); }
+.quiz-btn.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+.quiz-result {
+  display: none; margin-top: 32px; padding: 28px 32px;
+  background: var(--paper); border: 1.5px solid var(--accent);
+  border-radius: 12px;
+}
+.quiz-result.visible { display: block; }
+.quiz-result-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--accent);
+}
+.quiz-warning {
+  display: none; margin-top: 16px; padding: 12px 16px;
+  background: #fff8f0; border: 1px solid #e8c080;
+  border-radius: 6px; font-size: 13px; color: #7a5500;
+}
+
+/* ── OPEN SOURCE ── */
+#open { background: var(--paper); }
+.open-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.open-text h2 { margin-bottom: 20px; }
+.open-text p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+.open-tools { display: flex; flex-direction: column; gap: 16px; }
+.open-tool {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 24px;
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.open-tool-icon { font-size: 28px; flex-shrink: 0; }
+.open-tool h4 {
+  font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--ink);
+}
+.open-tool p { font-size: 13px; color: var(--muted); }
+.open-tool-stars { font-size: 12px; color: var(--gold); font-weight: 600; }
+
+/* ── FAQ ── */
+#faq { background: var(--cream); }
+.faq-grid { max-width: 720px; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-question {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer; background: none; border: none;
+  color: var(--ink); text-align: left; gap: 16px;
+}
+.faq-icon {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 50%; border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--muted); transition: all .2s;
+}
+.faq-item.open .faq-icon {
+  background: var(--accent); border-color: var(--accent);
+  color: #fff; transform: rotate(45deg);
+}
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.faq-answer-inner {
+  padding: 0 0 22px;
+  font-size: 15px; color: var(--muted); line-height: 1.7;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 48px; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px; background: var(--paper);
+}
+footer .logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 800; font-size: 18px; color: var(--accent);
+}
+footer .footer-links { display: flex; gap: 24px; list-style: none; flex-wrap: wrap; }
+footer .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; }
+footer .footer-links a:hover { color: var(--ink); }
+footer .pipeda { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+footer .pipeda::before { content: '🔒'; }
+
+/* ── MODEL TABLE ── */
+.model-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); margin-top: 16px; }
+.model-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 700px; }
+.model-table thead tr { background: var(--accent); }
+.model-table th {
+  padding: 12px 14px; text-align: left;
+  color: rgba(255,255,255,0.8); font-size: 11px;
+  letter-spacing: 1.5px; text-transform: uppercase; white-space: nowrap;
+}
+.model-table tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+.model-table tbody tr:last-child { border-bottom: none; }
+.model-table tbody tr:hover { background: var(--cream); }
+.model-table td { padding: 14px; vertical-align: middle; }
+.model-name { font-weight: 700; color: var(--accent); font-size: 14px; }
+.model-meta { display: block; font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.badge-rec {
+  display: inline-block; background: var(--gold); color: #fff;
+  font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 100px; margin-left: 6px; vertical-align: middle;
+}
+.badge-soon {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px dashed #bbb; color: #aaa;
+  padding: 5px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.btn-dl {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; background: var(--accent); color: #fff;
+  border-radius: 6px; font-size: 12px; font-weight: 600;
+  text-decoration: none; white-space: nowrap; transition: background .2s;
+}
+.btn-dl:hover { background: var(--accent-light); }
+
+/* ── MODAL ── */
+@keyframes modalIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+#checkout-modal { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; }
+#checkout-modal.active { display:flex; }
+#fade-overlay { display:none; position:fixed; inset:0; z-index:9999; background:#fff; opacity:0; pointer-events:none; transition:opacity .6s ease; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  section { padding: 72px 24px; }
+  .hero { padding: 120px 24px 72px; }
+  .divider { margin: 0 24px; }
+  .cards-grid { grid-template-columns: 1fr 1fr; }
+  .product-grid { grid-template-columns: 1fr; }
+  .open-grid { grid-template-columns: 1fr; }
+  footer { padding: 32px 24px; }
+}
+@media (max-width: 600px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .hero-ctas { flex-direction: column; }
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.fade-up { animation: fadeUp .6s ease forwards; opacity: 0; }
+.fade-up:nth-child(2) { animation-delay: .1s; }
+.fade-up:nth-child(3) { animation-delay: .2s; }
+.fade-up:nth-child(4) { animation-delay: .3s; }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-logo">PrivateDoc AI</a>
+  <ul class="nav-links">
+    <li><a href="#for-whom">Who it's for</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#product">Pricing</a></li>
+    <li><a href="#models">Models</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a href="#" onclick="openModal('trial');return false;" class="nav-cta"><span class="old-price">CAD$19</span> CAD$7 🔥</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-tag"><span></span> Privacy-first AI. Simple. Effective.</div>
+  <h1 class="fade-up">AI for your documents —<br>without sending them<br><em>anywhere.</em></h1>
+  <p class="hero-hook fade-up">Can't use ChatGPT with your client files? We get it. Here's the fix.</p>
+  <p class="hero-sub fade-up">A ready-to-run bundle of open-source tools. Download, install, done. No cloud. No subscriptions. No drama.</p>
+  <div class="hero-ctas fade-up">
+    <a href="#" onclick="openModal('main');return false;" class="btn-primary">Get PrivateDoc AI — CAD$89 →</a>
+    <a href="#" onclick="openModal('trial');return false;" class="btn-secondary" style="border-color:var(--gold);color:var(--gold);"><span style="text-decoration:line-through;opacity:0.6;font-weight:400;margin-right:4px;">CAD$19</span> CAD$7 🔥 Launch price</a>
+  </div>
+  <p class="hero-note fade-up">Launch promo — basic version at CAD$7 instead of CAD$19. One model, installed permanently, no expiry.</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── FOR WHOM ── -->
+<section id="for-whom">
+  <div class="section-label">Who it's for</div>
+  <h2>If your documents can't go to the cloud — this is for you.</h2>
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-icon">⚖️</div>
+      <h3>Lawyer</h3>
+      <p>Use AI to work through contracts and commercial documents — without your client data ever leaving your computer.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏢</div>
+      <h3>Business Owner</h3>
+      <p>Put AI to work on your business — strategies, deals, internal docs. Your intellectual property stays yours.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏥</div>
+      <h3>Doctor / Clinic</h3>
+      <p>Process patient records and test results with AI — personal health data stays on your machine, full stop.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <h3>Economist</h3>
+      <p>Analyze financial documents and data with AI — complete confidentiality, no exceptions.</p>
+    </div>
+  </div>
+  <p class="cards-note">Works for anyone who handles sensitive information — not just the four above.</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how">
+  <div class="section-label">How it works</div>
+  <h2>Three steps. Then you're done.</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Download the installer</h3>
+        <p>One file. Works on any modern Windows or Mac.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Run the script</h3>
+        <p>Everything installs automatically in 30–40 minutes. No technical background needed.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Work with your documents — offline</h3>
+        <p>Upload PDFs, Word files, spreadsheets, text files. Ask questions. Get answers. No internet required.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── PRODUCT ── -->
+<section id="product">
+  <div class="section-label">Pricing</div>
+  <h2>Two versions. One clear upgrade path.</h2>
+  <p class="section-sub">Start with the basics, or go straight to the full RAG system. Either way, your data stays on your machine.</p>
+  <div class="product-grid">
+    <div class="product-main">
+      <div class="product-badge">Full version</div>
+      <div class="product-title">PrivateDoc AI</div>
+      <div class="product-price">CAD$89</div>
+      <div class="product-price-sub">One-time payment. No subscription.</div>
+      <ul class="product-features">
+        <li>Installer script (Windows now / Mac coming soon)</li>
+        <li>Full RAG system — ask questions across your entire document library</li>
+        <li>Access to all models — current and future additions included</li>
+        <li>Separate workspace for each client or project — files never mix</li>
+        <li>Load your documents and start working immediately</li>
+        <li>Quick-start guide</li>
+        <li>Complete user guide</li>
+        <li>30 days email support — reply within 24 hours</li>
+      </ul>
+      <a href="#" onclick="openModal('main');return false;" class="btn-gold">Get PrivateDoc AI — CAD$89</a>
+    </div>
+
+    <div class="testdrive-card">
+      <div class="product-badge" style="background:var(--gold);">🔥 Launch promo</div>
+      <h3>Start here</h3>
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+        <div class="testdrive-price">CAD$7</div>
+        <div style="font-size:18px;color:rgba(255,255,255,0.4);text-decoration:line-through;">CAD$19</div>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:16px;">Launch price — limited time</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.8);font-weight:600;margin-bottom:12px;">Installs permanently on your machine. Works offline. No subscription. No expiry.</p>
+      <p>One model of your choice from the current catalog. Try the speed, the interface, the quality — before committing to the full version.</p>
+      <a href="#" onclick="openModal('trial');return false;" class="btn-gold" style="margin-top:24px;">Get the Basic Version — CAD$7</a>
+      <div class="testdrive-upgrade">
+        Want the full version? Pay CAD$89 and get PrivateDoc AI.<br>Already bought the basic? Your payment counts toward the upgrade.
+      </div>
+    </div>
+  </div>
+</section>
+      <div class="testdrive-upgrade">
+        Уже купили Quickstart за $19? Доплатите $70 — получите полный PrivateDoc AI.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── MODEL SELECTOR ── -->
+<section id="models">
+  <div class="section-label">Pick your model</div>
+  <h2>Find the right model for your machine</h2>
+  <p class="section-sub">Answer two questions — get a recommendation and a download link.</p>
+
+  <div class="quiz-wrapper">
+    <div class="quiz-step">
+      <div class="quiz-question">What operating system are you on?</div>
+      <div class="quiz-options" id="os-options">
+        <button class="quiz-btn" onclick="selectOS('windows',this)">Windows</button>
+        <button class="quiz-btn" onclick="selectOS('mac',this)">Mac</button>
+      </div>
+    </div>
+    <div class="quiz-step" id="ram-step" style="display:none">
+      <div class="quiz-question">How much RAM does your computer have?</div>
+      <div class="quiz-options" id="ram-options">
+        <button class="quiz-btn" onclick="selectRAM('8',this)">8 GB</button>
+        <button class="quiz-btn" onclick="selectRAM('16',this)">16 GB</button>
+        <button class="quiz-btn" onclick="selectRAM('32',this)">32 GB or more</button>
+        <button class="quiz-btn" onclick="selectRAM('unknown',this)">Not sure</button>
+      </div>
+    </div>
+    <div class="quiz-result" id="quiz-result">
+      <div class="quiz-result-title" id="result-title"></div>
+      <div id="result-model-list"></div>
+      <div class="quiz-warning" id="result-warning"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:48px;">
+    <h3 style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:800;margin-bottom:20px;">All available models</h3>
+    <div class="model-table-wrap">
+      <table class="model-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Params</th>
+            <th>RAM</th>
+            <th>Context</th>
+            <th>Best for</th>
+            <th>OS</th>
+            <th>Access</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:#f0f7f3;">
+            <td><span class="model-name">qwen2.5:7b<span class="badge-rec">★ recommended</span></span><span class="model-meta">Alibaba · 5 GB</span></td>
+            <td>7B</td><td>16 GB</td><td>128K</td>
+            <td style="font-size:12px;color:var(--muted);max-width:200px;">Lawyers, accountants, HR, consultants. Best balance of quality and speed.</td>
+            <td>⊞ Windows</td>
+            <td><span style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;">✓ Available</span></td>
+          </tr>
+          <tr style="background:#f0f7f3;">
+            <td><span class="model-name">qwen2.5:7b<span class="badge-rec">★ recommended</span></span><span class="model-meta">Alibaba · 5 GB</span></td>
+            <td>7B</td><td>16 GB</td><td>128K</td>
+            <td style="font-size:12px;color:var(--muted);max-width:200px;">Lawyers, accountants, HR, consultants. Best balance of quality and speed.</td>
+            <td>⌘ Mac</td>
+            <td><span style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;">✓ Available</span></td>
+          </tr>
+          <tr>
+            <td><span class="model-name">gemma3:4b</span><span class="model-meta">Google · 3.3 GB</span></td>
+            <td>4B</td><td>8 GB</td><td>128K</td>
+            <td style="font-size:12px;color:var(--muted);max-width:200px;">8 GB RAM machines. Document summarization, single-file Q&A.</td>
+            <td>⊞ Windows</td>
+            <td><span style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;">✓ Available</span></td>
+          </tr>
+          <tr>
+            <td><span class="model-name">gemma3:4b</span><span class="model-meta">Google · 3.3 GB</span></td>
+            <td>4B</td><td>8 GB</td><td>128K</td>
+            <td style="font-size:12px;color:var(--muted);max-width:200px;">8 GB RAM machines. Document summarization, single-file Q&A.</td>
+            <td>⌘ Mac</td>
+            <td><span style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;">✓ Available</span></td>
+          </tr>
+          <tr style="background:#f0f7f3;">
+            <td><span class="model-name">dolphin3:8b</span><span class="model-meta">Dolphin · 4.9 GB</span></td>
+            <td>8B</td><td>16 GB</td><td>32K</td>
+            <td style="font-size:12px;color:var(--muted);max-width:200px;">Medical staff, researchers. No built-in content restrictions.</td>
+            <td>⊞ Windows</td>
+            <td><span style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;">✓ Available</span></td>
+          </tr>
+          <tr style="background:#f0f7f3;">
+            <td><span class="model-name">dolphin3:8b</span><span class="model-meta">Dolphin · 4.9 GB</span></td>
+            <td>8B</td><td>16 GB</td><td>32K</td>
+            <td style="font-size:12px;color:var(--muted);max-width:200px;">Medical staff, researchers. No built-in content restrictions.</td>
+            <td>⌘ Mac</td>
+            <td><span style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;">✓ Available</span></td>
+          </tr>
+          <tr style="opacity:0.7;">
+            <td><span class="model-name">qwen2.5:14b</span><span class="model-meta">Alibaba · 9 GB</span></td>
+            <td>14B</td><td>32 GB</td><td>128K</td>
+            <td style="font-size:12px;color:var(--muted);max-width:200px;">Powerful workstations. Complex multi-document analysis.</td>
+            <td>⊞ / ⌘</td>
+            <td><span class="badge-soon">⏳ Coming soon</span></td>
+          </tr>
+          <tr style="opacity:0.7;">
+            <td><span class="model-name">deepseek-r1:7b</span><span class="model-meta">DeepSeek · 4.7 GB</span></td>
+            <td>7B</td><td>16 GB</td><td>64K</td>
+            <td style="font-size:12px;color:var(--muted);max-width:200px;">Tax consultants, financial analysts. Shows reasoning steps before the answer.</td>
+            <td>⊞ / ⌘</td>
+            <td><span class="badge-soon">⏳ Coming soon</span></td>
+          </tr>
+          <tr style="opacity:0.7;background:#fffde7;">
+            <td><span class="model-name">medllama2:7b</span><span class="model-meta">Medical · 3.8 GB</span></td>
+            <td>7B</td><td>16 GB</td><td>4K</td>
+            <td style="font-size:12px;color:var(--muted);max-width:200px;">Doctors, clinics. Trained on medical texts — understands clinical terminology.</td>
+            <td>⊞ / ⌘</td>
+            <td><span class="badge-soon">⏳ Coming soon</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── OPEN SOURCE ── -->
+<section id="open">
+  <div class="section-label">About this product</div>
+  <div class="open-grid">
+    <div class="open-text">
+      <h2>Open-source tools. Pre-built for you.</h2>
+      <p>PrivateDoc AI is built on two open-source projects — Ollama and AnythingLLM. Both are free. Both are public. Anyone can read every line of their code.</p>
+      <p>We took these tools, tested them across different hardware setups, worked through all the edge cases, and packaged everything into a bundle that just works on the first try.</p>
+      <p>The installer scripts are open too — you're welcome to read them before you run anything.</p>
+    </div>
+    <div class="open-tools">
+      <div class="open-tool">
+        <div class="open-tool-icon">🦙</div>
+        <div>
+          <h4>Ollama</h4>
+          <p>The AI engine. Runs models locally. No Docker required.</p>
+          <div class="open-tool-stars">★ 95,000+ GitHub stars · MIT license</div>
+        </div>
+      </div>
+      <div class="open-tool">
+        <div class="open-tool-icon">🤖</div>
+        <div>
+          <h4>AnythingLLM</h4>
+          <p>Chat interface + RAG + document workspaces. One .exe install.</p>
+          <div class="open-tool-stars">★ 54,000+ GitHub stars · MIT license</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── FAQ ── -->
+<section id="faq">
+  <div class="section-label">Questions</div>
+  <h2>FAQ</h2>
+  <div class="faq-grid">
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">Is it safe to run the installer script?<span class="faq-icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">The script does two things: downloads Ollama from ollama.com and AnythingLLM from anythingllm.com. That's it. Both are open-source and widely used. The script itself is open — you can read every line before you run it.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">Do my documents actually stay on my machine?<span class="faq-icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">Yes. Once installed, everything runs completely offline. Nothing is transmitted anywhere. Your files never leave your computer — not to us, not to anyone.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">Does it work without internet after setup?<span class="faq-icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">Yes. Setup requires internet — about 7 GB of downloads in total. After that, the whole thing runs offline. Permanently.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">Do I need to be technical to use this?<span class="faq-icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">No. The installer handles everything automatically. If something goes wrong, email us — we'll get back to you within 24 hours.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">What's the difference between the basic version and the full version?<span class="faq-icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        Basic (CAD$7 launch promo, regular CAD$19): Local AI without the RAG system. One model of your choice from the current catalog. Installed permanently on your machine — no expiry.<br><br>
+        Full version (CAD$89): Full RAG system — load entire folders of documents and ask questions across all of them. Access to all models in the catalog, including new ones as they're added. 30 days email support included.
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">What if something doesn't work?<span class="faq-icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">Email us at privatedeskai@gmail.com. We respond within 24 hours. If we can't get it running on your machine within 30 days — full refund, no questions.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">What are the minimum system requirements?<span class="faq-icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">Windows 10 or 11. 8 GB RAM minimum, 16 GB recommended. 10 GB free disk space. No GPU required. Mac support coming soon.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">How fast is it?<span class="faq-icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">Depends on your hardware. CPU only (no graphics card): 20–60 seconds per response. With an NVIDIA GPU: 5–10 seconds. The first response after a break is always slower — the model reloads into memory. That's normal.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">What's open-source code?<span class="faq-icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">It means the software is written in public — anyone can read exactly how it works. Ollama and AnythingLLM are open-source the same way Linux or Firefox are. No hidden functions. No black boxes.</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── MODALS ── -->
+<div id="checkout-modal">
+  <div onclick="closeModal()" style="position:absolute;inset:0;background:rgba(15,15,15,0.55);backdrop-filter:blur(4px);"></div>
+  <div id="modal-content" style="position:relative;z-index:1;background:var(--paper);border:1px solid var(--border);border-radius:16px;padding:40px;max-width:460px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.18);animation:modalIn .25s ease;"></div>
+</div>
+<div id="fade-overlay"></div>
+
+<footer>
+  <div class="logo">PrivateDoc AI</div>
+  <ul class="footer-links">
+    <li><a href="mailto:privatedeskai@gmail.com">privatedeskai@gmail.com</a></li>
+    <li><a href="#for-whom">Who it's for</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#" onclick="openModal('main');return false;">Buy</a></li>
+  </ul>
+  <div class="pipeda">Your data stays on your machine.</div>
+</footer>
+
+<script>
+// ── MODAL ──
+var GUMROAD_MAIN = 'https://privatedeskai.gumroad.com/l/quickstart';
+var GUMROAD_TRIAL = 'https://privatedeskai.gumroad.com/l/quickstart';
+
+var modalContents = {
+  main: {
+    label: 'Full version',
+    title: 'PrivateDoc AI',
+    price: 'CAD$89',
+    pricesub: 'One-time payment. No subscription.',
+    items: ['Installer script (Windows)', 'Full RAG system', 'Access to all models — current and future', 'Quick-start guide + complete user guide', '30 days email support'],
+    warning: 'You\'ll be redirected to Gumroad to complete your purchase. The amount may display in USD.',
+    url: 'https://privatedeskai.gumroad.com/l/quickstart'
+  },
+  trial: {
+    label: '🔥 Launch promo',
+    title: 'Basic Version',
+    price: 'CAD$7',
+    pricesub: 'Launch price — was CAD$19. One-time payment. No subscription.',
+    items: ['One model of your choice from the current catalog', 'Installer script (Windows / Mac)', 'AI without RAG system', 'Installation guide', '30 days email support'],
+    warning: 'You\'ll be redirected to Gumroad to complete your purchase. The amount may display in USD.',
+    url: 'https://privatedeskai.gumroad.com/l/quickstart'
+  }
+};
+
+function openModal(type) {
+  var c = modalContents[type];
+  var html = '<div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">'+c.label+'</div>';
+  html += '<h3 style="font-family:Playfair Display,Georgia,serif;font-size:22px;font-weight:800;color:var(--ink);margin-bottom:8px;">'+c.title+'</h3>';
+  html += '<div style="font-size:28px;font-weight:700;font-family:Playfair Display,Georgia,serif;color:var(--gold);letter-spacing:-1px;margin-bottom:4px;">'+c.price+'</div>';
+  html += '<div style="font-size:13px;color:var(--muted);margin-bottom:24px;">'+c.pricesub+'</div>';
+  html += '<div style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:13px;line-height:1.6;">';
+  html += '<div style="font-weight:600;margin-bottom:8px;">What\'s included:</div>';
+  c.items.forEach(function(i){ html += '<div style="color:var(--muted);">✓ '+i+'</div>'; });
+  html += '</div>';
+  html += '<div style="background:#fff8f0;border:1px solid #e8c080;border-radius:8px;padding:12px 16px;margin-bottom:28px;font-size:12px;color:#7a5500;line-height:1.6;">⚠ '+c.warning+'</div>';
+  html += '<div style="display:flex;gap:12px;">';
+  html += '<button onclick="closeModal()" style="flex:1;padding:13px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;">Cancel</button>';
+  html += '<button onclick="proceedToGumroad(\''+c.url+'\')" style="flex:2;padding:13px;background:var(--accent);border:none;border-radius:8px;font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:600;color:#fff;cursor:pointer;">Continue to payment →</button>';
+  html += '</div>';
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('checkout-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('checkout-modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function proceedToGumroad(url) {
+  closeModal();
+  var overlay = document.getElementById('fade-overlay');
+  overlay.style.display = 'block';
+  setTimeout(function(){ overlay.style.opacity = '1'; }, 10);
+  setTimeout(function(){ window.open(url, '_blank'); }, 650);
+  setTimeout(function(){ overlay.style.opacity = '0'; setTimeout(function(){ overlay.style.display = 'none'; }, 600); }, 700);
+}
+
+// ── QUIZ ──
+var selectedOS = null, selectedRAM = null;
+var models = [
+  { name:'qwen2.5:7b', org:'Alibaba', size:'5 GB', ram:16, context:'128K', speed_win:'20–60 sec', speed_mac:'5–10 sec', desc:'Lawyers, accountants, HR. Best balance of quality and speed.', os:['windows','mac'], file_win:'./files/install-privatedoc-win-16gb.ps1', file_mac:null, available:true, rec:true },
+  { name:'gemma3:4b', org:'Google', size:'3.3 GB', ram:8, context:'128K', speed_win:'10–30 sec', speed_mac:'5–15 sec', desc:'8 GB RAM machines. Document summarization, single-file Q&A.', os:['windows','mac'], file_win:'./files/install-privatedoc-win-8gb.ps1', file_mac:null, available:true, rec:false },
+  { name:'qwen2.5:14b', org:'Alibaba', size:'9 GB', ram:32, context:'128K', speed_win:'30–90 sec', speed_mac:'3–8 sec', desc:'Powerful workstations. Complex multi-document analysis.', os:['windows','mac'], file_win:null, file_mac:null, available:false, rec:false },
+  { name:'deepseek-r1:7b', org:'DeepSeek', size:'4.7 GB', ram:16, context:'64K', speed_win:'20–50 sec', speed_mac:'5–10 sec', desc:'Shows reasoning steps before the answer. Financial analysts, lawyers.', os:['windows','mac'], file_win:null, file_mac:null, available:false, rec:false },
+  { name:'dolphin3:8b', org:'Dolphin', size:'4.9 GB', ram:16, context:'32K', speed_win:'20–50 sec', speed_mac:'5–10 sec', desc:'Medical staff, researchers. No built-in content restrictions.', os:['windows','mac'], file_win:'./files/install-win-dolphin3.ps1', file_mac:'./files/install-mac-dolphin3.sh', available:true, rec:false },
+  { name:'medllama2:7b', org:'Medical', size:'3.8 GB', ram:16, context:'4K', speed_win:'15–40 sec', speed_mac:'5–10 sec', desc:'Doctors, clinics. Trained on medical texts.', os:['windows'], file_win:null, file_mac:null, available:false, rec:false },
+];
+
+function selectOS(os, el) {
+  selectedOS = os; selectedRAM = null;
+  document.querySelectorAll('#os-options .quiz-btn').forEach(function(b){ b.classList.remove('selected'); });
+  el.classList.add('selected');
+  document.getElementById('ram-step').style.display = 'block';
+  document.getElementById('quiz-result').classList.remove('visible');
+  document.querySelectorAll('#ram-options .quiz-btn').forEach(function(b){ b.classList.remove('selected'); });
+}
+function selectRAM(ram, el) {
+  selectedRAM = ram;
+  document.querySelectorAll('#ram-options .quiz-btn').forEach(function(b){ b.classList.remove('selected'); });
+  el.classList.add('selected');
+  showResult();
+}
+function showResult() {
+  if (!selectedOS || !selectedRAM) return;
+  var warning = document.getElementById('result-warning');
+  if (selectedRAM === 'unknown') {
+    document.getElementById('result-title').textContent = 'How to check your RAM:';
+    warning.textContent = 'Windows: press Win + R, type msinfo32, press Enter. Look for "Installed Physical Memory". Mac: Apple menu → About This Mac → Memory.';
+    warning.style.display = 'block';
+    document.getElementById('result-model-list').innerHTML = '';
+    document.getElementById('quiz-result').classList.add('visible');
+    return;
+  }
+  warning.style.display = 'none';
+  var ramGB = parseInt(selectedRAM);
+  var list = models.filter(function(m){ return m.os.indexOf(selectedOS) !== -1 && m.ram <= ramGB; });
+  var html = '<div style="display:flex;flex-direction:column;gap:10px;">';
+  list.forEach(function(m) {
+    var speed = selectedOS === 'mac' ? m.speed_mac : m.speed_win;
+    var hasFile = selectedOS === 'windows' ? m.file_win : m.file_mac;
+    var recBadge = m.rec ? '<span style="background:var(--gold);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px;">★ recommended</span>' : '';
+    var btn = '';
+    var bg = '';
+    if (m.available && hasFile) {
+      btn = '<a href="#" onclick="openModal(\'trial\');return false;" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:#fff;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">↓ Buy to access</a>';
+      bg = 'background:#f0f7f3;border-color:#b8d9c5;';
+    } else if (m.available && !hasFile) {
+      btn = '<span style="font-size:12px;color:var(--muted);">⏳ Mac coming soon</span>';
+      bg = 'background:#f0f7f3;border-color:#b8d9c5;';
+    } else {
+      btn = '<span style="border:1px dashed #bbb;color:#aaa;padding:6px 12px;border-radius:100px;font-size:11px;font-weight:600;">⏳ Coming soon</span>';
+    }
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;'+bg+'flex-wrap:wrap;">';
+    html += '<div style="flex:1;min-width:200px;">';
+    html += '<div style="font-weight:700;font-size:15px;color:var(--accent);">'+m.name+recBadge+'</div>';
+    html += '<div style="font-size:12px;color:var(--muted);margin:4px 0;">'+m.org+' · '+m.size+' · '+m.context+' · '+speed+'</div>';
+    html += '<div style="font-size:13px;color:var(--ink);">'+m.desc+'</div>';
+    html += '</div><div>'+btn+'</div></div>';
+  });
+  html += '</div>';
+  document.getElementById('result-title').textContent = 'Models for your setup:';
+  document.getElementById('result-model-list').innerHTML = html;
+  document.getElementById('quiz-result').classList.add('visible');
+  document.getElementById('quiz-result').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+// ── FAQ ──
+function toggleFaq(btn) {
+  var item = btn.parentElement;
+  var answer = item.querySelector('.faq-answer');
+  var isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(i){
+    i.classList.remove('open');
+    i.querySelector('.faq-answer').style.maxHeight = '0';
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    answer.style.maxHeight = answer.scrollHeight + 'px';
+  }
+}
+</script>
+</body>
+</html>
