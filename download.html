@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrivateDoc AI — Download Your Files</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f; --paper: #f5f2ec; --cream: #ede9e0;
+    --accent: #1a3a2a; --accent-light: #2d5c42;
+    --gold: #c4952a; --gold-light: #f0c45a;
+    --muted: #6b6560; --border: #d4cfc6;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--paper); color: var(--ink);
+    font-size: 16px; line-height: 1.6;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(245,242,236,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 800; font-size: 20px;
+    color: var(--accent); text-decoration: none; letter-spacing: -0.5px;
+  }
+
+  /* ── SELECTOR SCREEN ── */
+  .selector {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 120px 24px 80px;
+    text-align: center;
+  }
+  .selector-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+  }
+  .selector h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(26px, 3vw, 38px);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -1.5px; color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .selector p {
+    font-size: 15px; color: var(--muted);
+    margin-bottom: 48px; max-width: 480px;
+  }
+
+  .version-cards {
+    display: flex; gap: 24px; flex-wrap: wrap;
+    justify-content: center; max-width: 720px;
+  }
+  .version-card {
+    background: var(--cream); border: 2px solid var(--border);
+    border-radius: 16px; padding: 32px 28px;
+    width: 300px; text-align: left;
+    cursor: pointer;
+    transition: border-color .2s, transform .15s, box-shadow .2s;
+    text-decoration: none; color: inherit;
+    display: block;
+  }
+  .version-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(26,58,42,0.12);
+  }
+  .version-card.featured {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+  .version-card.featured:hover {
+    border-color: var(--accent-light); background: var(--accent-light);
+  }
+  .card-badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 4px 10px;
+    border-radius: 100px; margin-bottom: 16px;
+  }
+  .version-card:not(.featured) .card-badge {
+    background: var(--gold); color: #fff;
+  }
+  .version-card.featured .card-badge {
+    background: rgba(255,255,255,0.2); color: #fff;
+  }
+  .card-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px; font-weight: 800;
+    margin-bottom: 6px;
+  }
+  .version-card:not(.featured) .card-title { color: var(--ink); }
+  .version-card.featured .card-title { color: #fff; }
+  .card-price {
+    font-size: 28px; font-weight: 700;
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -1px; margin-bottom: 16px;
+  }
+  .version-card:not(.featured) .card-price { color: var(--gold); }
+  .version-card.featured .card-price { color: var(--gold-light); }
+  .card-features { list-style: none; margin-bottom: 24px; }
+  .card-features li {
+    font-size: 13px; padding: 6px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .version-card.featured .card-features li {
+    border-bottom-color: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.85);
+  }
+  .card-features li:last-child { border-bottom: none; }
+  .card-features li::before { content: '✓'; font-weight: 700; flex-shrink: 0; }
+  .version-card:not(.featured) .card-features li::before { color: var(--accent); }
+  .version-card.featured .card-features li::before { color: var(--gold-light); }
+  .card-btn {
+    width: 100%; padding: 12px;
+    border-radius: 8px; font-size: 14px; font-weight: 600;
+    text-align: center; border: none; cursor: pointer;
+    font-family: 'Inter', system-ui, sans-serif;
+    transition: background .2s;
+  }
+  .version-card:not(.featured) .card-btn {
+    background: var(--accent); color: #fff;
+  }
+  .version-card:not(.featured) .card-btn:hover { background: var(--accent-light); }
+  .version-card.featured .card-btn {
+    background: var(--gold); color: #fff;
+  }
+  .version-card.featured .card-btn:hover { background: var(--gold-light); color: var(--ink); }
+
+  .selector-note {
+    margin-top: 32px; font-size: 13px; color: var(--muted);
+  }
+  .selector-note a { color: var(--accent); font-weight: 600; text-decoration: none; }
+
+  /* ── RETURNING USER SCREEN ── */
+  .returning {
+    display: none;
+    flex: 1; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 120px 24px 80px; text-align: center;
+  }
+  .returning.visible { display: flex; }
+  .returning-icon { font-size: 48px; margin-bottom: 20px; }
+  .returning h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(24px, 3vw, 36px); font-weight: 800;
+    letter-spacing: -1px; margin-bottom: 12px;
+  }
+  .returning p { font-size: 15px; color: var(--muted); margin-bottom: 32px; }
+  .returning-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 16px 32px; background: var(--accent); color: #fff;
+    border-radius: 8px; font-size: 16px; font-weight: 600;
+    text-decoration: none; transition: background .2s;
+    margin-bottom: 16px;
+  }
+  .returning-btn:hover { background: var(--accent-light); }
+  .returning-switch {
+    font-size: 13px; color: var(--muted); cursor: pointer;
+    text-decoration: underline; background: none; border: none;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .returning-switch:hover { color: var(--ink); }
+
+  @media (max-width: 680px) {
+    nav { padding: 16px 24px; }
+    .version-cards { flex-direction: column; align-items: center; }
+    .version-card { width: 100%; max-width: 340px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="./index-new.html" class="nav-logo">PrivateDoc AI</a>
+</nav>
+
+<!-- RETURNING USER SCREEN -->
+<div class="returning" id="returning-screen">
+  <div class="returning-icon">👋</div>
+  <h1 id="returning-title">Welcome back.</h1>
+  <p id="returning-desc">Taking you to your download page.</p>
+  <a href="#" class="returning-btn" id="returning-btn">Go to my downloads →</a>
+</div>
+
+<!-- SELECTOR SCREEN -->
+<div class="selector" id="selector-screen">
+  <div class="selector-label">Download</div>
+  <h1>Which version did you purchase?</h1>
+  <p>Select the version you paid for — you'll be taken straight to your download page.</p>
+
+  <div class="version-cards">
+
+    <!-- BASIC -->
+    <div class="version-card" onclick="chooseVersion('basic')">
+      <div class="card-badge">🔥 Launch promo</div>
+      <div class="card-title">Basic Version</div>
+      <div class="card-price">CAD$7</div>
+      <ul class="card-features">
+        <li>One model of your choice</li>
+        <li>Installer script (Windows / Mac)</li>
+        <li>Installation guide</li>
+        <li>30 days email support</li>
+      </ul>
+      <button class="card-btn">Download Basic →</button>
+    </div>
+
+    <!-- FULL -->
+    <div class="version-card featured" onclick="chooseVersion('full')">
+      <div class="card-badge">Full Version</div>
+      <div class="card-title">PrivateDoc AI</div>
+      <div class="card-price">CAD$89</div>
+      <ul class="card-features">
+        <li>Full RAG system</li>
+        <li>Access to all models</li>
+        <li>Separate workspaces per client</li>
+        <li>Complete user guide</li>
+        <li>30 days email support</li>
+      </ul>
+      <button class="card-btn">Download Full Version →</button>
+    </div>
+
+  </div>
+
+  <p class="selector-note">
+    Questions? Write to <a href="mailto:privatedeskai@gmail.com">privatedeskai@gmail.com</a> — we reply within 24 hours.
+  </p>
+</div>
+
+<script>
+  var PAGES = {
+    basic: './quickstart-download.html',
+    full:  './privatedoc-download.html'
+  };
+  var LABELS = {
+    basic: 'Basic Version',
+    full:  'PrivateDoc AI — Full Version'
+  };
+  var STORAGE_KEY = 'privatedocai_version';
+
+  function chooseVersion(version) {
+    try { localStorage.setItem(STORAGE_KEY, version); } catch(e) {}
+    window.location.href = PAGES[version];
+  }
+
+  // On load — check if returning user
+  (function() {
+    var saved;
+    try { saved = localStorage.getItem(STORAGE_KEY); } catch(e) {}
+
+    if (saved && PAGES[saved]) {
+      // Show returning screen
+      document.getElementById('selector-screen').style.display = 'none';
+      var rs = document.getElementById('returning-screen');
+      rs.classList.add('visible');
+      document.getElementById('returning-title').textContent = 'Welcome back.';
+      document.getElementById('returning-desc').textContent =
+        'Last time you downloaded the ' + LABELS[saved] + '. Taking you there now.';
+      var btn = document.getElementById('returning-btn');
+      btn.href = PAGES[saved];
+      btn.textContent = 'Go to ' + LABELS[saved] + ' →';
+    }
+  })();
+</script>
+</body>
+</html>
